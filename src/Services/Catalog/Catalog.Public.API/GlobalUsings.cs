@@ -1,0 +1,13 @@
+﻿global using Catalog.Public.API;
+global using Catalog.Public.API.Application.Products.Dtos;
+global using Catalog.Public.API.Application.Products.Events;
+global using Catalog.Public.API.Application.Products.Queries;
+global using Catalog.Public.API.Domain;
+global using Catalog.Public.API.Infrastructure;
+global using Mapster;
+global using Microsoft.AspNetCore.Mvc;
+global using Microsoft.Extensions.Caching.Distributed;
+global using Shared.Application;
+global using Shared.Application.EventBus;
+global using Shared.Application.Events;
+global using System.Text.Json;

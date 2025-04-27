@@ -1,0 +1,89 @@
+services:
+  rabbitmq:        
+    container_name: rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  redis:            
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+
+  catalog.admin.db:     
+    container_name: catalog.admin.db
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=Admin@1234!
+    restart: always
+    ports:
+      - "1433:1433"    
+    volumes:
+      - sqlserver-data:/var/opt/mssql    
+ 
+  catalog.admin.api:    
+    container_name: catalog.admin.api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=8080
+      - ASPNETCORE_HTTPS_PORTS=8081
+      - ConnectionStrings__Database=Server=catalog.admin.db;Database=ShopMicroservices.Catalog.Admin.Db;User Id=sa;Password=Admin@1234!;Encrypt=False;TrustServerCertificate=True
+      - ConnectionStrings__RabbitMQ=rabbitmq
+    ports:
+      - "6000:8080"
+      - "6060:8081"
+    depends_on:
+      - catalog.admin.db
+      - rabbitmq
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro        
+  
+  catalog.public.api:    
+    container_name: catalog.public.api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=8080
+      - ASPNETCORE_HTTPS_PORTS=8081            
+      - ConnectionStrings__Redis=redis:6379
+      - ConnectionStrings__RedisInstance=CatalogPublicAPI/
+      - ConnectionStrings__RabbitMQ=rabbitmq
+    ports:
+      - "6001:8080"
+      - "6061:8081"
+    depends_on:
+      - redis
+      - rabbitmq
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro  
+
+  cart.api:
+    container_name: cart.api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=8080
+      - ASPNETCORE_HTTPS_PORTS=8081
+      - ConnectionStrings__Redis=redis:6379
+      - ConnectionStrings__RedisInstance=CartAPI/
+      - ConnectionStrings__RabbitMQ=rabbitmq
+    ports:
+      - "6002:8080"
+      - "6062:8081"
+    depends_on:
+      - redis      
+      - rabbitmq
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro

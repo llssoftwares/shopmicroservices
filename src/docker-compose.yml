@@ -1,0 +1,31 @@
+services:
+  rabbitmq:    
+    image: rabbitmq:3-management
+  
+  redis:     
+     image: redis:latest
+
+  catalog.admin.db:    
+    image: mcr.microsoft.com/mssql/server:latest
+    
+  catalog.admin.api:    
+    image: ${DOCKER_REGISTRY-}catalogadminapi
+    build:
+      context: .
+      dockerfile: Services/Catalog/Catalog.Admin.API/Dockerfile    
+
+  catalog.public.api:    
+    image: ${DOCKER_REGISTRY-}catalogpublicapi
+    build:
+      context: .
+      dockerfile: Services/Catalog/Catalog.Public.API/Dockerfile    
+   
+  cart.api:
+    image: ${DOCKER_REGISTRY-}cartapi
+    build:
+      context: .
+      dockerfile: Services/Cart/Cart.API/Dockerfile
+
+volumes:
+  sqlserver-data:
+  redis-data:
