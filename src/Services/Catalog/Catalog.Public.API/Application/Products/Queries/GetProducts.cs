@@ -14,7 +14,8 @@ public class GetProductsEndpoint : ICarterModule
 
             return Results.Ok(response);
         })
-        .WithName("GetProducts");
+        .WithTags("Products")
+        .WithSummary("Get products");
     }
 }
 

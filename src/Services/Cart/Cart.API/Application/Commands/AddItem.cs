@@ -28,7 +28,8 @@ public class AddItemEndpoint : ICarterModule
 
             return Results.Ok(response);
         })
-        .WithName("SaveCart");
+        .WithTags("Cart")
+        .WithSummary("Add item to cart");
     }
 }
 

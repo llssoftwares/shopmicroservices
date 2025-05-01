@@ -21,7 +21,8 @@ public class CreateCategoryEndpoint : ICarterModule
             var response = await sender.Send(command);
             return Results.Created($"/categories/{response.CategoryId}", response);
         })
-        .WithName("CreateCategory");
+        .WithTags("Categories")
+        .WithSummary("Create category");
     }
 }
 

@@ -14,7 +14,8 @@ public class CreateCartEndpoint : ICarterModule
 
             return Results.Created($"/cart/{response.Cart.Id}", response);
         })
-        .WithName("CreateCart");
+        .WithTags("Cart")
+        .WithSummary("Create cart");
     }
 }
 

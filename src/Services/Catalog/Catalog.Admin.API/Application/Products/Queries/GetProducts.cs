@@ -16,7 +16,8 @@ public class GetProductsEndpoint : ICarterModule
             var response = await sender.Send(new GetProducts() { CategoriesIds = categoriesIds });
             return Results.Ok(response);
         })
-        .WithName("GetProducts");
+        .WithTags("Products")
+        .WithSummary("Get products");
     }
 }
 

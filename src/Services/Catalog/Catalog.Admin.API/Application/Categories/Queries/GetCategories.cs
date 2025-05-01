@@ -13,7 +13,8 @@ public class GetCategoriesEndpoint : ICarterModule
             var response = await sender.Send(new GetCategories());
             return Results.Ok(response);
         })
-        .WithName("GetCategories");
+        .WithTags("Categories")
+        .WithSummary("Get categories");
     }
 }
 

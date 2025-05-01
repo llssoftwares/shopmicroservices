@@ -14,7 +14,8 @@ public class GetCartEndpoint : ICarterModule
 
             return Results.Created($"/cart/{response.Cart.Id}", response);
         })
-        .WithName("GetCart");
+        .WithTags("Cart")
+        .WithSummary("Get cart");
     }
 }
 

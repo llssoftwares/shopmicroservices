@@ -2,6 +2,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services
     .AddOpenApi()
+    .AddEndpointsApiExplorer()
+    .AddSwaggerGen()
     .AddApplicationServices()
     .AddRedis(builder.Configuration)
     .AddEventBus(builder.Configuration)
@@ -14,7 +16,9 @@ var app = builder.Build();
 app.MapCarter();
 app.MapOpenApi();
 app.UseHttpsRedirection()
-    .UseCustomExceptionHandler();
+    .UseCustomExceptionHandler()
+    .UseSwagger()
+    .UseSwaggerUI();
 
 await app.UseEventHandlers();
 

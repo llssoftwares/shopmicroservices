@@ -26,7 +26,8 @@ public class CreateProductEndpoint : ICarterModule
 
             return Results.Created($"/products/{response.ProductId}", response);
         })
-        .WithName("CreateProduct");
+        .WithTags("Products")
+        .WithSummary("Create product");
     }
 }
 
