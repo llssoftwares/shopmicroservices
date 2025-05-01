@@ -1,6 +1,9 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using FluentValidation;
+using Mediator;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Shared.Application.Behaviors;
 using Shared.Application.EventBus;
 using Shared.Application.Exceptions.Handler;
 using System.Reflection;
@@ -11,26 +14,21 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddCustomExceptionHandler(this IServiceCollection services)
     {
-        services.AddExceptionHandler<CustomExceptionHandler>();
-
-        return services;
+        return services.AddExceptionHandler<CustomExceptionHandler>();
     }
 
     public static IApplicationBuilder UseCustomExceptionHandler(this IApplicationBuilder app)
     {
-        app.UseExceptionHandler(options => { });
-
-        return app;
+        return app.UseExceptionHandler(options => { });
     }
 
     public static IServiceCollection AddEventBus(this IServiceCollection services, IConfiguration configuration)
     {
         var eventBus = new EventBusRabbitMQ(configuration.GetConnectionString("RabbitMQ")!);
 
-        services.AddTransient<IEventPublisher>(x => eventBus);
-        services.AddTransient<IEventConsumer>(x => eventBus);
-
-        return services;
+        return services
+            .AddTransient<IEventPublisher>(x => eventBus)
+            .AddTransient<IEventConsumer>(x => eventBus);
     }
 
     public static IServiceCollection AddEventHandlers(this IServiceCollection services, params Assembly[] assemblies)
@@ -42,22 +40,20 @@ public static class DependencyInjection
                 .Where(a => !a.IsDynamic && !string.IsNullOrWhiteSpace(a.FullName))];
         }
 
-        services.Scan(scan => scan
+        return services.Scan(scan => scan
             .FromAssemblies(assemblies)
             .AddClasses(c => c.AssignableTo(typeof(IEventHandler<>)))
             .AsImplementedInterfaces()
             .WithScopedLifetime());
-
-        return services;
     }
 
     public static async Task UseEventHandlers(this WebApplication app, string? subscriberId = null)
     {
         if (string.IsNullOrEmpty(subscriberId))
         {
-            var entryAssembly = Assembly.GetEntryAssembly();            
+            var entryAssembly = Assembly.GetEntryAssembly();
 
-            subscriberId = entryAssembly?.GetName().Name 
+            subscriberId = entryAssembly?.GetName().Name
                 ?? "DefaultSubscriberId";
         }
 

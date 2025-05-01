@@ -23,6 +23,8 @@ public static class DependencyInjection
         return services
             .AddMediator(options => { options.ServiceLifetime = ServiceLifetime.Scoped; })
             .AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>))
+            .AddScoped(typeof(IPipelineBehavior<,>), typeof(CommandLoggingBehavior<,>))
+            .AddScoped(typeof(IPipelineBehavior<,>), typeof(QueryLoggingBehavior<,>))
             .AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
     }
 }
