@@ -8,7 +8,20 @@ public class CreateCategoryValidator : AbstractValidator<CreateCategory>
 {
     public CreateCategoryValidator()
     {
-        RuleFor(x => x.Name).NotEmpty().WithMessage("Name is required");        
+        RuleFor(x => x.Name).NotEmpty().WithMessage("Name is required");
+    }
+}
+
+public class CreateCategoryEndpoint : ICarterModule
+{
+    public void AddRoutes(IEndpointRouteBuilder app)
+    {
+        app.MapPost("/categories", async (ISender sender, CreateCategory command) =>
+        {
+            var response = await sender.Send(command);
+            return Results.Created($"/categories/{response.CategoryId}", response);
+        })
+        .WithName("CreateCategory");
     }
 }
 

@@ -1,15 +1,14 @@
 ﻿global using Cart.API;
 global using Cart.API.Application.Commands;
 global using Cart.API.Application.Dtos;
-global using Cart.API.Application.Events;
 global using Cart.API.Application.Exceptions;
 global using Cart.API.Application.Queries;
 global using Cart.API.Domain;
 global using Cart.API.Infrastructure;
+global using Carter;
 global using FluentValidation;
 global using Mapster;
 global using Mediator;
-global using Microsoft.AspNetCore.Mvc;
 global using Microsoft.Extensions.Caching.Distributed;
 global using Shared.Application;
 global using Shared.Application.Behaviors;

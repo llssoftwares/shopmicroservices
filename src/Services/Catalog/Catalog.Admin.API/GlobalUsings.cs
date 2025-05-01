@@ -1,10 +1,7 @@
-﻿global using Catalog.Admin.API;
-global using Catalog.Admin.API.Application.Categories.Commands;
+﻿global using Carter;
+global using Catalog.Admin.API;
 global using Catalog.Admin.API.Application.Categories.Dtos;
-global using Catalog.Admin.API.Application.Categories.Queries;
-global using Catalog.Admin.API.Application.Products.Commands;
 global using Catalog.Admin.API.Application.Products.Dtos;
-global using Catalog.Admin.API.Application.Products.Queries;
 global using Catalog.Admin.API.Domain;
 global using Catalog.Admin.API.Infrastructure;
 global using Catalog.Admin.API.Infrastructure.Configurations;

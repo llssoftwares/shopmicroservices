@@ -1,13 +1,11 @@
-﻿global using Catalog.Public.API;
+﻿global using Carter;
+global using Catalog.Public.API;
 global using Catalog.Public.API.Application.Products.Dtos;
-global using Catalog.Public.API.Application.Products.Events;
-global using Catalog.Public.API.Application.Products.Queries;
 global using Catalog.Public.API.Domain;
 global using Catalog.Public.API.Infrastructure;
 global using FluentValidation;
 global using Mapster;
 global using Mediator;
-global using Microsoft.AspNetCore.Mvc;
 global using Microsoft.Extensions.Caching.Distributed;
 global using Shared.Application;
 global using Shared.Application.Behaviors;

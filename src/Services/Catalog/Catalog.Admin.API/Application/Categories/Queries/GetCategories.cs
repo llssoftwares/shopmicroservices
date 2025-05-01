@@ -4,6 +4,19 @@ public record GetCategories() : IQuery<GetCategoriesResponse>;
 
 public record GetCategoriesResponse(IEnumerable<CategoryDto> Categories);
 
+public class GetCategoriesEndpoint : ICarterModule
+{
+    public void AddRoutes(IEndpointRouteBuilder app)
+    {
+        app.MapGet("/categories", async (ISender sender) =>
+        {
+            var response = await sender.Send(new GetCategories());
+            return Results.Ok(response);
+        })
+        .WithName("GetCategories");
+    }
+}
+
 public class GetCategoriesHandler(CatalogAdminDbContext dbContext)
     : IQueryHandler<GetCategories, GetCategoriesResponse>
 {

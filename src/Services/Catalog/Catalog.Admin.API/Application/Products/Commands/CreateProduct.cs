@@ -16,6 +16,20 @@ public class CreateProductValidator : AbstractValidator<CreateProduct>
     }
 }
 
+public class CreateProductEndpoint : ICarterModule
+{
+    public void AddRoutes(IEndpointRouteBuilder app)
+    {
+        app.MapPost("/products", async (ISender sender, CreateProduct command) =>
+        {
+            var response = await sender.Send(command);
+
+            return Results.Created($"/products/{response.ProductId}", response);
+        })
+        .WithName("CreateProduct");
+    }
+}
+
 public class CreateProductHandler(CatalogAdminDbContext dbContext, IEventPublisher eventPublisher)
     : ICommandHandler<CreateProduct, CreateProductResponse>
 {

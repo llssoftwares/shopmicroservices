@@ -7,6 +7,19 @@ public record GetProducts() : IQuery<GetProductsResponse>
 
 public record GetProductsResponse(IEnumerable<ProductDto> Products);
 
+public class GetProductsEndpoint : ICarterModule
+{
+    public void AddRoutes(IEndpointRouteBuilder app)
+    {
+        app.MapGet("/products", async (ISender sender, [FromQuery] Guid[] categoriesIds) =>
+        {
+            var response = await sender.Send(new GetProducts() { CategoriesIds = categoriesIds });
+            return Results.Ok(response);
+        })
+        .WithName("GetProducts");
+    }
+}
+
 public class GetProductsHandler(CatalogAdminDbContext dbContext)
     : IQueryHandler<GetProducts, GetProductsResponse>
 {
@@ -19,5 +32,5 @@ public class GetProductsHandler(CatalogAdminDbContext dbContext)
             .ToListAsync(cancellationToken);
 
         return new(list);
-    }    
+    }
 }

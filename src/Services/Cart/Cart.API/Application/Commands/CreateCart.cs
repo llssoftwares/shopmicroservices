@@ -4,6 +4,20 @@ public record CreateCart() : ICommand<CreateCartResponse>;
 
 public record CreateCartResponse(ShoppingCartDto Cart);
 
+public class CreateCartEndpoint : ICarterModule
+{
+    public void AddRoutes(IEndpointRouteBuilder app)
+    {
+        app.MapPost("/cart", async (ISender sender) =>
+        {
+            var response = await sender.Send(new CreateCart());
+
+            return Results.Created($"/cart/{response.Cart.Id}", response);
+        })
+        .WithName("CreateCart");
+    }
+}
+
 public class CreateCartHandler(ShoppingCartRepository shoppingCartRepository)
     : ICommandHandler<CreateCart, CreateCartResponse>
 {

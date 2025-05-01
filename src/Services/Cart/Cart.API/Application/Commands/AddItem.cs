@@ -16,6 +16,22 @@ public class AddItemValidator : AbstractValidator<AddItem>
     }
 }
 
+public class AddItemEndpoint : ICarterModule
+{
+    public void AddRoutes(IEndpointRouteBuilder app)
+    {
+        app.MapPost("/cart/{id}/items", async (ISender sender, Guid id, AddItem command) =>
+        {
+            command.CartId = id;
+
+            var response = await sender.Send(command);
+
+            return Results.Ok(response);
+        })
+        .WithName("SaveCart");
+    }
+}
+
 public class AddItemHandler(ShoppingCartRepository shoppingCartRepository, ProductRepository productRepository) 
     : ICommandHandler<AddItem, AddItemResponse>
 {
