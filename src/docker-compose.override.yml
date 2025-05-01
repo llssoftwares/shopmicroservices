@@ -32,8 +32,9 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_HTTP_PORTS=8080
       - ASPNETCORE_HTTPS_PORTS=8081
-      - ConnectionStrings__Database=Server=catalog.admin.db;Database=ShopMicroservices.Catalog.Admin.Db;User Id=sa;Password=Admin@1234!;Encrypt=False;TrustServerCertificate=True
+      - ConnectionStrings__Database=Server=catalog.admin.db;Database=ShopMicroservices.Catalog.Admin.Db;User Id=sa;Password=Admin@1234!;Encrypt=False;TrustServerCertificate=True      
       - ConnectionStrings__RabbitMQ=rabbitmq
+      - Database__Migrate=true
     ports:
       - "6000:8080"
       - "6060:8081"

@@ -1,7 +1,7 @@
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services
-    .AddOpenApi()    
+    .AddOpenApi()
     .AddApplicationServices()
     .AddRedis(builder.Configuration)
     .AddEventBus(builder.Configuration)
@@ -16,9 +16,9 @@ app.UseHttpsRedirection()
 
 await app.UseEventHandlers();
 
-app.MapGet("/products", async ([FromServices] GetProductsHandler handler, Guid? categoryId) =>
+app.MapGet("/products", async (ISender sender, Guid? categoryId) =>
 {
-    var response = await handler.HandleAsync(new GetProducts(categoryId));
+    var response = await sender.Send(new GetProducts(categoryId));
 
     return Results.Ok(response);
 })

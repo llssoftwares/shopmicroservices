@@ -14,11 +14,11 @@ public static class DependencyInjection
     }
 
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)
-    {
-        services.AddTransient<GetProductsHandler>();
-        services.AddTransient<ProductCreatedHandler>();
-        services.AddTransient<ProductRepository>();
-
-        return services;
+    {        
+        return services
+            .AddMediator(options => { options.ServiceLifetime = ServiceLifetime.Scoped; })
+            .AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>))
+            .AddValidatorsFromAssembly(Assembly.GetExecutingAssembly())            
+            .AddTransient<ProductRepository>();
     }    
 }

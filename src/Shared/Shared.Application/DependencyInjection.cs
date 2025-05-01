@@ -55,13 +55,10 @@ public static class DependencyInjection
     {
         if (string.IsNullOrEmpty(subscriberId))
         {
-            var entryAssembly = Assembly.GetEntryAssembly();
+            var entryAssembly = Assembly.GetEntryAssembly();            
 
-            var mainNamespace = entryAssembly?.GetTypes()
-                .FirstOrDefault(type => type.Namespace != null)?
-                .Namespace;
-
-            subscriberId = mainNamespace ?? "DefaultSubscriberId";
+            subscriberId = entryAssembly?.GetName().Name 
+                ?? "DefaultSubscriberId";
         }
 
         using var scope = app.Services.CreateScope();

@@ -16,27 +16,27 @@ app.UseHttpsRedirection()
 
 await app.UseEventHandlers();
 
-app.MapGet("/cart/{id:guid}", async ([FromServices] GetCartQueryHandler handler, Guid id) =>
+app.MapGet("/cart/{id:guid}", async (ISender sender, Guid id) =>
 {
-    var response = await handler.HandleAsync(new GetCart(id));
+    var response = await sender.Send(new GetCart(id));
 
     return Results.Created($"/cart/{response.Cart.Id}", response);
 })
 .WithName("GetCart");
 
-app.MapPost("/cart", async ([FromServices] CreateCartCommandHandler handler) =>
+app.MapPost("/cart", async (ISender sender) =>
 {
-    var response = await handler.HandleAsync(new CreateCart());
+    var response = await sender.Send(new CreateCart());
 
     return Results.Created($"/cart/{response.Cart.Id}", response);
 })
 .WithName("CreateCart");
 
-app.MapPost("/cart/{id}/items", async ([FromServices] AddItemCommandHandler handler, Guid id, AddItem command) =>
+app.MapPost("/cart/{id}/items", async (ISender sender, Guid id, AddItem command) =>
 {
     command.CartId = id;
 
-    var response = await handler.HandleAsync(command);
+    var response = await sender.Send(command);
 
     return Results.Ok(response);
 })

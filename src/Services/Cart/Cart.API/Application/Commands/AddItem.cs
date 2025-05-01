@@ -1,15 +1,25 @@
 ﻿namespace Cart.API.Application.Commands;
 
-public record AddItem(Guid ProductId, int Quantity)
+public record AddItem(Guid ProductId, int Quantity) : ICommand<AddItemResponse>
 {
     public Guid CartId { get; set; }
 }
 
 public record AddItemResponse(ShoppingCartDto Cart);
 
-public class AddItemCommandHandler(ShoppingCartRepository shoppingCartRepository, ProductRepository productRepository)
+public class AddItemValidator : AbstractValidator<AddItem>
 {
-    public async Task<AddItemResponse> HandleAsync(AddItem command)
+    public AddItemValidator()
+    {
+        RuleFor(x => x.ProductId).NotEmpty().WithMessage("ProductId is required");
+        RuleFor(x => x.Quantity).GreaterThan(0).WithMessage("Quantity must be greater than 0");        
+    }
+}
+
+public class AddItemHandler(ShoppingCartRepository shoppingCartRepository, ProductRepository productRepository) 
+    : ICommandHandler<AddItem, AddItemResponse>
+{
+    public async ValueTask<AddItemResponse> Handle(AddItem command, CancellationToken cancellationToken)
     {
         var product = await productRepository.GetAsync(command.ProductId);
         var shoppingCart = await shoppingCartRepository.GetAsync(command.CartId);

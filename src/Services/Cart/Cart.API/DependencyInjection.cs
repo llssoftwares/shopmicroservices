@@ -15,13 +15,11 @@ public static class DependencyInjection
 
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
-        services.AddTransient<GetCartQueryHandler>();
-        services.AddTransient<CreateCartCommandHandler>();
-        services.AddTransient<AddItemCommandHandler>();
-        services.AddTransient<ShoppingCartRepository>();
-        services.AddTransient<ProductRepository>();
-        services.AddTransient<ProductCreatedHandler>();        
-
-        return services;
+        return services
+            .AddMediator(options => { options.ServiceLifetime = ServiceLifetime.Scoped; })
+            .AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>))
+            .AddValidatorsFromAssembly(Assembly.GetExecutingAssembly())            
+            .AddTransient<ProductRepository>()
+            .AddTransient<ShoppingCartRepository>();
     }
 }

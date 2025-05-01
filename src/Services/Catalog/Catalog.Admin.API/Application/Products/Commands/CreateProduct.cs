@@ -1,15 +1,25 @@
 ﻿namespace Catalog.Admin.API.Application.Products.Commands;
 
-public record CreateProduct(string Name, decimal Price)
+public record CreateProduct(string Name, decimal Price) : ICommand<CreateProductResponse>
 {
     public IEnumerable<Guid> CategoriesIds { get; init; } = [];
 };
 
 public record CreateProductResponse(Guid ProductId);
 
-public class CreateProductCommandHandler(CatalogAdminDbContext dbContext, IEventPublisher eventPublisher)
+public class CreateProductValidator : AbstractValidator<CreateProduct>
 {
-    public async Task<CreateProductResponse> HandleAsync(CreateProduct command)
+    public CreateProductValidator()
+    {
+        RuleFor(x => x.Name).NotEmpty().WithMessage("Name is required");
+        RuleFor(x => x.Price).GreaterThan(0).WithMessage("Price must be greater than 0");
+    }
+}
+
+public class CreateProductHandler(CatalogAdminDbContext dbContext, IEventPublisher eventPublisher)
+    : ICommandHandler<CreateProduct, CreateProductResponse>
+{
+    public async ValueTask<CreateProductResponse> Handle(CreateProduct command, CancellationToken cancellationToken)
     {
         var product = new Product
         {
@@ -19,15 +29,15 @@ public class CreateProductCommandHandler(CatalogAdminDbContext dbContext, IEvent
             ProductCategories = [.. command.CategoriesIds.Select(x => new ProductCategory { CategoryId = x })]
         };
 
-        await dbContext.Products.AddAsync(product);
+        await dbContext.Products.AddAsync(product, cancellationToken);
 
-        await dbContext.SaveChangesAsync();
+        await dbContext.SaveChangesAsync(cancellationToken);
 
         var categoriesNames = await dbContext
             .Categories
             .Where(x => command.CategoriesIds.Contains(x.Id))
             .Select(x => new { x.Id, x.Name })
-            .ToDictionaryAsync(x => x.Id, x => x.Name);
+            .ToDictionaryAsync(x => x.Id, x => x.Name, cancellationToken);
 
         await eventPublisher.PublishAsync(new ProductCreated
         {

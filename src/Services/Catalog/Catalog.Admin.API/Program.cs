@@ -4,7 +4,8 @@ builder.Services
     .AddOpenApi()
     .AddApplicationServices()
     .AddDatabase(builder.Configuration)
-    .AddEventBus(builder.Configuration);
+    .AddEventBus(builder.Configuration)
+    .AddCustomExceptionHandler();
 
 var app = builder.Build();
 
@@ -12,31 +13,31 @@ app.MapOpenApi();
 app.UseHttpsRedirection()
     .UseCustomExceptionHandler();
 
-app.MapGet("/products", async ([FromServices] GetProductsQueryHandler handler, [FromQuery] Guid[] categoriesIds) =>
+app.MapGet("/products", async (ISender sender, [FromQuery] Guid[] categoriesIds) =>
 {
-    var response = await handler.HandleAsync(new GetProducts() { CategoriesIds = categoriesIds });
+    var response = await sender.Send(new GetProducts() { CategoriesIds = categoriesIds });
     return Results.Ok(response);
 })
 .WithName("GetProducts");
 
-app.MapPost("/products", async ([FromServices] CreateProductCommandHandler handler, CreateProduct command) =>
+app.MapPost("/products", async (ISender sender, CreateProduct command) =>
 {
-    var response = await handler.HandleAsync(command);
+    var response = await sender.Send(command);
 
     return Results.Created($"/products/{response.ProductId}", response);
 })
 .WithName("CreateProduct");
 
-app.MapGet("/categories", async ([FromServices] GetCategoriesQueryHandler handler) =>
+app.MapGet("/categories", async (ISender sender) =>
 {
-    var response = await handler.HandleAsync(new GetCategories());
+    var response = await sender.Send(new GetCategories());
     return Results.Ok(response);
 })
 .WithName("GetCategories");
 
-app.MapPost("/categories", async ([FromServices] CreateCategoryCommandHandler handler, CreateCategory command) =>
+app.MapPost("/categories", async (ISender sender, CreateCategory command) =>
 {
-    var response = await handler.HandleAsync(command);
+    var response = await sender.Send(command);
     return Results.Created($"/categories/{response.CategoryId}", response);
 })
 .WithName("CreateCategory");

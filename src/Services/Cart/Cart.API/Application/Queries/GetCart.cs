@@ -1,12 +1,13 @@
 ﻿namespace Cart.API.Application.Queries;
 
-public record GetCart(Guid Id);
+public record GetCart(Guid Id) : IQuery<GetCartResponse>;
 
 public record GetCartResponse(ShoppingCartDto Cart);
 
-public class GetCartQueryHandler(ShoppingCartRepository shoppingCartRepository)
+public class GetCartHandler(ShoppingCartRepository shoppingCartRepository)
+    : IQueryHandler<GetCart, GetCartResponse>
 {
-    public async Task<GetCartResponse> HandleAsync(GetCart query)
+    public async ValueTask<GetCartResponse> Handle(GetCart query, CancellationToken cancellationToken)
     {
         var shoppingCart = await shoppingCartRepository.GetAsync(query.Id);
 
