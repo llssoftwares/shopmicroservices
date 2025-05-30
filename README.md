@@ -81,6 +81,7 @@ This solution demonstrates a modular structure for building microservices using 
 - FluentValidation
 - Entity Framework Core (Admin API)
 - OpenAPI/Swagger
+- Docker Compose
 
 ---
 
